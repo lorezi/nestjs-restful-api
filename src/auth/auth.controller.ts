@@ -1,9 +1,9 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 
 @Controller()
 export class AuthController {
   @Post('register')
-  async register() {
-    return 'register';
+  async register(@Body() body) {
+    return body;
   }
 }
