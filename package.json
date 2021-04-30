@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/typeorm": "^7.1.5",
     "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "mysql2": "^2.2.5",
     "nanoid": "^3.1.22",
     "passport-jwt": "^4.0.0",
