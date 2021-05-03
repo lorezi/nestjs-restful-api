@@ -10,6 +10,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -51,7 +52,12 @@ export class UserController {
 
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
-    return await this.userService.findOne({ id });
+    const user = await this.userService.findOne({ id });
+    if (user) {
+      return user;
+    }
+
+    throw new NotFoundException(`user with the id:${id} not found`);
   }
 
   @Patch(':id')
