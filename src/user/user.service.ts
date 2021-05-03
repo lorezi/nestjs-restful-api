@@ -17,7 +17,21 @@ export class UserService {
     return await this.userRepository.find();
   }
 
+  /**
+   *
+   * @param data request data
+   * @returns persisted data
+   */
   async createUser(data): Promise<User> {
     return this.userRepository.save(data);
+  }
+
+  /**
+   *
+   * @param filter condition to select user
+   * @returns a single user that matches the filter condition
+   */
+  async findOne(filter): Promise<User> {
+    return this.userRepository.findOne(filter);
   }
 }

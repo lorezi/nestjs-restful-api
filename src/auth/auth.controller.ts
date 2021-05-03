@@ -1,6 +1,13 @@
+import { LoginDto } from './models/login.dto';
 import { RegisterDto } from './models/register.dto';
 import { UserService } from './../user/user.service';
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  NotFoundException,
+  Post,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 
@@ -25,5 +32,23 @@ export class AuthController {
       email: body.email,
       password: hashedPassword,
     });
+  }
+
+  @Post('login')
+  async login(@Body() body: LoginDto) {
+    // filter user db with email
+
+    const user = await this.userService.findOne({ email: body.email });
+
+    if (!user) {
+      // return not found
+      throw new NotFoundException('user not found 🥵');
+    }
+
+    if (!(await bcrypt.compare(body.password, user.password))) {
+      throw new BadRequestException('invalid login credentials');
+    }
+
+    return user;
   }
 }
