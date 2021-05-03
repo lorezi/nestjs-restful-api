@@ -14,7 +14,7 @@ import {
 import { User } from './models/user.entity';
 import * as bcrypt from 'bcryptjs';
 
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UserController {
