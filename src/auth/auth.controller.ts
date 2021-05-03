@@ -4,17 +4,20 @@ import { UserService } from './../user/user.service';
 import {
   BadRequestException,
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   NotFoundException,
   Post,
   Req,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Response, Request } from 'express';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller()
 export class AuthController {
   constructor(
@@ -61,6 +64,11 @@ export class AuthController {
     return user;
   }
 
+  /**
+   *
+   * @param request to get cookies
+   * @returns authenticated user
+   */
   @Get('me')
   async user(@Req() request: Request) {
     const cookie = request.cookies['jwt'];
