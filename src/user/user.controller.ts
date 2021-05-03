@@ -1,3 +1,4 @@
+import { UpdateUserDto } from './models/updateUser.dto';
 import { AuthGuard } from './../auth/auth.guard';
 import { CreateUserDto } from './models/createUser.dto';
 import { UserService } from './user.service';
@@ -5,8 +6,12 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -45,6 +50,30 @@ export class UserController {
 
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
+    return await this.userService.findOne({ id });
+  }
+
+  @Patch(':id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() body: UpdateUserDto,
+  ): Promise<User> {
+    await this.userService.update(id, body);
     return this.userService.findOne({ id });
+  }
+
+  @Delete(':id')
+  async deleteUser(@Param('id') id: string): Promise<any> {
+    if (await this.userService.findOne({ id })) {
+      await this.userService.delete(id);
+      return {
+        message: 'success',
+      };
+    }
+
+    throw new HttpException(
+      `user not found with id: ${id}`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 }
