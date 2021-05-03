@@ -39,12 +39,14 @@ export class AuthController {
 
     const hashedPassword = await bcrypt.hash(body.password, 12);
 
-    return this.userService.createUser({
+    const data = await this.userService.createUser({
       first_name: body.first_name,
       last_name: body.last_name,
       email: body.email,
       password: hashedPassword,
     });
+    delete data.password;
+    return data;
   }
 
   @Post('login')
