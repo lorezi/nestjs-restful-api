@@ -13,6 +13,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -30,8 +31,8 @@ export class UserController {
    * @returns list of users
    */
   @Get()
-  async getUsers(): Promise<User[]> {
-    return await this.userService.getUsers();
+  async getUsers(@Query('page') page = 1): Promise<User[]> {
+    return await this.userService.paginate(page);
   }
 
   @Post()

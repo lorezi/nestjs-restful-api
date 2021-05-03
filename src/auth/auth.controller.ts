@@ -45,8 +45,9 @@ export class AuthController {
       email: body.email,
       password: hashedPassword,
     });
-    delete data.password;
-    return data;
+    // delete data.password;
+    const { password, ...user } = data;
+    return user;
   }
 
   @Post('login')
