@@ -7,9 +7,11 @@ import {
   Controller,
   NotFoundException,
   Post,
+  Res,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { Response } from 'express';
 
 @Controller()
 export class AuthController {
@@ -35,7 +37,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: LoginDto) {
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     // filter user db with email
 
     const user = await this.userService.findOne({ email: body.email });
@@ -48,6 +53,11 @@ export class AuthController {
     if (!(await bcrypt.compare(body.password, user.password))) {
       throw new BadRequestException('invalid login credentials');
     }
+
+    const jwt = await this.jwtService.signAsync({ id: user.id });
+
+    // using http only cookies
+    response.cookie('jwt', jwt, { httpOnly: true });
 
     return user;
   }
