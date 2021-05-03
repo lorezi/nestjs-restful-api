@@ -25,7 +25,7 @@ export class RoleController {
 
   @Post()
   async create(@Body('name') name: string): Promise<Role> {
-    return this.roleService.create(name);
+    return this.roleService.create({ name });
   }
 
   @Get(':id')
