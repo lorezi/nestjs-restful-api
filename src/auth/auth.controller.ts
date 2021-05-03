@@ -1,3 +1,4 @@
+import { AuthGuard } from './auth.guard';
 import { LoginDto } from './models/login.dto';
 import { RegisterDto } from './models/register.dto';
 import { UserService } from './../user/user.service';
@@ -7,10 +8,15 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Post,
   Req,
   Res,
+  UnauthorizedException,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -42,7 +48,10 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() body: LoginDto, @Res() response: Response) {
+  async login(
+    @Body() body: LoginDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     // filter user db with email
 
     const user = await this.userService.findOne({ email: body.email });
@@ -69,12 +78,26 @@ export class AuthController {
    * @param request to get cookies
    * @returns authenticated user
    */
+  @UseGuards(AuthGuard)
   @Get('me')
   async user(@Req() request: Request) {
     const cookie = request.cookies['jwt'];
 
     const data = await this.jwtService.verifyAsync(cookie);
 
+    if (!data['id']) {
+      throw new HttpException('unauthenticated user', HttpStatus.UNAUTHORIZED);
+    }
+
     return this.userService.findOne({ id: data['id'] });
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('jwt');
+    return {
+      message: 'success',
+    };
   }
 }
