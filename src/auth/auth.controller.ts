@@ -37,17 +37,19 @@ export class AuthController {
       throw new BadRequestException('Passwords do not match  😓');
     }
 
-    const hashedPassword = await bcrypt.hash(body.password, 12);
+    const password = await bcrypt.hash(body.password, 12);
 
-    const data = await this.userService.createUser({
+    const newUser = await this.userService.createUser({
       first_name: body.first_name,
       last_name: body.last_name,
       email: body.email,
-      password: hashedPassword,
+      password,
+      role: {
+        id: '39f06084-dd6b-49cc-9601-5edd4023c4ab', // default role for registered users ====> Admin
+      },
     });
-    // delete data.password;
-    const { password, ...user } = data;
-    return user;
+    delete newUser.password;
+    return newUser;
   }
 
   @Post('login')

@@ -44,11 +44,17 @@ export class RoleController {
     @Param('id') id: string,
     @Body('name') name: string,
   ): Promise<Role> {
-    if (await this.roleService.update(id, name)) {
-      return this.roleService.findOne({ id });
+    const role = await this.roleService.findOne({ id });
+
+    if (role) {
+      if (name) {
+        await this.roleService.update(id, { name });
+        return this.roleService.findOne({ id });
+      }
+      throw new BadRequestException('role name required');
     }
 
-    throw new BadRequestException('role name required');
+    throw new BadRequestException(`role with id ${id} not found`);
   }
 
   @Delete(':id')
@@ -61,7 +67,7 @@ export class RoleController {
     }
 
     throw new HttpException(
-      `role not found with id: ${id}`,
+      `role with id ${id} not found`,
       HttpStatus.NOT_FOUND,
     );
   }
