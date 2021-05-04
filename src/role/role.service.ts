@@ -46,7 +46,7 @@ export class RoleService {
    * @returns a single user that matches the filter condition
    */
   async findOne(filter): Promise<Role> {
-    return this.roleRepository.findOne(filter);
+    return this.roleRepository.findOne(filter, { relations: ['permissions'] });
   }
 
   async update(id: string, data): Promise<any> {

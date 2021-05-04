@@ -24,8 +24,14 @@ export class RoleController {
   }
 
   @Post()
-  async create(@Body('name') name: string): Promise<Role> {
-    return this.roleService.create({ name });
+  async create(
+    @Body('name') name: string,
+    @Body('permissions') permission_ids: string[],
+  ): Promise<Role> {
+    return this.roleService.create({
+      name,
+      permissions: permission_ids.map((id) => ({ id })), // returns an array of objects [{id:"a"}, {id:"b"}]
+    });
   }
 
   @Get(':id')
@@ -43,15 +49,22 @@ export class RoleController {
   async update(
     @Param('id') id: string,
     @Body('name') name: string,
+    @Body('permissions') permission_ids: string[],
   ): Promise<Role> {
     const role = await this.roleService.findOne({ id });
 
     if (role) {
       if (name) {
-        await this.roleService.update(id, { name });
-        return this.roleService.findOne({ id });
+        await this.roleService.update(id, {
+          name,
+        });
+        role.name = name;
       }
-      throw new BadRequestException('role name required');
+
+      return await this.roleService.create({
+        ...role,
+        permissions: permission_ids.map((id) => ({ id })),
+      });
     }
 
     throw new BadRequestException(`role with id ${id} not found`);
