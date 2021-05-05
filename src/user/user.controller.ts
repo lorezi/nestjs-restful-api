@@ -1,3 +1,4 @@
+import { ChangePassword } from './models/changePassword.dto';
 import { Request } from 'express';
 import { AuthService } from './../auth/auth.service';
 import { PaginatedResult } from './../common/paginated-result.interface';
@@ -6,6 +7,7 @@ import { AuthGuard } from './../auth/auth.guard';
 import { CreateUserDto } from './models/createUser.dto';
 import { UserService } from './user.service';
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -79,7 +81,30 @@ export class UserController {
     return this.userService.findOne({ id });
   }
 
-  // async updatePassword() {}
+  @Patch('password')
+  async updatePassword(
+    @Req() request: Request,
+    @Body() body: ChangePassword,
+  ): Promise<User> {
+    // if password does not match with confirm password throw an exception
+    if (body.password !== body.password_confirm) {
+      throw new BadRequestException('Passwords do not match! 🥵');
+    }
+
+    // get the signed in user
+    const id = await this.authService.signedUserID(request);
+
+    // hash password
+    const hashed = await bcrypt.hash(body.password, 12);
+
+    // update password
+    await this.userService.update(id, {
+      password: hashed,
+    });
+
+    // return signed user detail
+    return this.userService.findOne({ id });
+  }
 
   @Patch(':id')
   async updateUser(
