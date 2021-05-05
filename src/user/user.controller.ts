@@ -1,3 +1,5 @@
+import { Request } from 'express';
+import { AuthService } from './../auth/auth.service';
 import { PaginatedResult } from './../common/paginated-result.interface';
 import { UpdateUserDto } from './models/updateUser.dto';
 import { AuthGuard } from './../auth/auth.guard';
@@ -16,6 +18,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -26,7 +29,10 @@ import * as bcrypt from 'bcryptjs';
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
 
   /**
    *
@@ -61,6 +67,19 @@ export class UserController {
 
     throw new NotFoundException(`user with the id:${id} not found`);
   }
+
+  @Patch('profile')
+  async updateProfile(
+    @Req() request: Request,
+    @Body() body: UpdateUserDto,
+  ): Promise<User> {
+    const id = await this.authService.signedUserID(request);
+
+    await this.userService.update(id, body);
+    return this.userService.findOne({ id });
+  }
+
+  // async updatePassword() {}
 
   @Patch(':id')
   async updateUser(
