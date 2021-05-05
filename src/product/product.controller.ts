@@ -4,7 +4,10 @@ import { ProductService } from './product.service';
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -37,5 +40,20 @@ export class ProductController {
   async update(@Param('id') id: string, @Body() body: UpdateProductDto) {
     await this.productService.update(id, body);
     return this.productService.findOne({ id });
+  }
+
+  @Delete(':id')
+  async delete(@Param(':id') id: string) {
+    if (await this.productService.findOne({ id })) {
+      await this.productService.delete(id);
+      return {
+        message: 'success',
+      };
+    }
+
+    throw new HttpException(
+      `product with the id ${id} not found`,
+      HttpStatus.NOT_FOUND,
+    );
   }
 }
