@@ -8,14 +8,12 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  HttpCode,
   HttpException,
   HttpStatus,
   NotFoundException,
   Post,
   Req,
   Res,
-  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -39,7 +37,7 @@ export class AuthController {
 
     const password = await bcrypt.hash(body.password, 12);
 
-    const newUser = await this.userService.createUser({
+    const newUser = await this.userService.create({
       first_name: body.first_name,
       last_name: body.last_name,
       email: body.email,

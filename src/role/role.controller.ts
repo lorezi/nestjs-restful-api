@@ -20,7 +20,7 @@ export class RoleController {
 
   @Get()
   async all() {
-    return this.roleService.all();
+    return this.roleService.all(['permissions']);
   }
 
   @Post()
@@ -36,7 +36,7 @@ export class RoleController {
 
   @Get(':id')
   async get(@Param('id') id: string): Promise<Role> {
-    const role = await this.roleService.findOne({ id });
+    const role = await this.roleService.findOne({ id }, ['permissions']);
 
     if (role) {
       return role;

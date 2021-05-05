@@ -1,3 +1,4 @@
+import { PaginatedResult } from './../common/paginated-result.interface';
 import { UpdateUserDto } from './models/updateUser.dto';
 import { AuthGuard } from './../auth/auth.guard';
 import { CreateUserDto } from './models/createUser.dto';
@@ -32,8 +33,8 @@ export class UserController {
    * @returns list of users
    */
   @Get()
-  async getUsers(@Query('page') page = 1): Promise<User[]> {
-    return await this.userService.paginate(page);
+  async getUsers(@Query('page') page = 1): Promise<PaginatedResult> {
+    return await this.userService.paginate(page, ['role']);
   }
 
   @Post()
@@ -42,7 +43,7 @@ export class UserController {
 
     const { role_id, ...data } = body;
 
-    const newUser = await this.userService.createUser({
+    const newUser = await this.userService.create({
       ...data,
       password,
       role: { id: role_id },
@@ -53,7 +54,7 @@ export class UserController {
 
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
-    const user = await this.userService.findOne({ id });
+    const user = await this.userService.findOne({ id }, ['role']);
     if (user) {
       return user;
     }
