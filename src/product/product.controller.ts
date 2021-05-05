@@ -28,7 +28,7 @@ export class ProductController {
 
   @Post()
   async create(@Body() body: CreateProductDto) {
-    return this.productService.create({ body });
+    return await this.productService.create(body);
   }
 
   @Get(':id')
