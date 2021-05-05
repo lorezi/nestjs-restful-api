@@ -1,3 +1,4 @@
+import { UpdateProductDto } from './models/updateProductDto';
 import { AuthGuard } from './../auth/auth.guard';
 import { ProductService } from './product.service';
 import {
@@ -5,6 +6,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -28,6 +30,12 @@ export class ProductController {
 
   @Get(':id')
   async get(@Param('id') id: string) {
+    return this.productService.findOne({ id });
+  }
+
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() body: UpdateProductDto) {
+    await this.productService.update(id, body);
     return this.productService.findOne({ id });
   }
 }
