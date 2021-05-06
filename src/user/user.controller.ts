@@ -26,6 +26,7 @@ import {
 } from '@nestjs/common';
 import { User } from './models/user.entity';
 import * as bcrypt from 'bcryptjs';
+import { HasPermission } from 'src/permission/has-permission.decorator';
 
 @UseGuards(AuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -41,6 +42,7 @@ export class UserController {
    * @returns list of users
    */
   @Get()
+  @HasPermission('view_users')
   async getUsers(@Query('page') page = 1): Promise<PaginatedResult> {
     return await this.userService.paginate(page, ['role']);
   }
