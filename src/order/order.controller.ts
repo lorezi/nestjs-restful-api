@@ -72,4 +72,9 @@ export class OrderController {
     // TODO add return keyword to simulate the bug
     res.status(200).send(csv);
   }
+
+  @Get('report')
+  async report() {
+    return this.orderService.report();
+  }
 }
