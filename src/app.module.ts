@@ -1,5 +1,3 @@
-import { RoleService } from './role/role.service';
-import { PermissionController } from './permission/permission.controller';
 import { PermissionGuard } from './permission/permission.guard';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,6 +13,8 @@ import { APP_GUARD } from '@nestjs/core';
 @Module({
   imports: [
     UserModule,
+    // TODO use env config
+    // TODO request validation
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'db',
